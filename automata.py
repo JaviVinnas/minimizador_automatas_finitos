@@ -5,6 +5,7 @@ class ErrorAutomata(Exception):
 
 
 def eliminar_duplicados(lista):
+    '''elimina duplicados de la lista pasada como argumento'''
     res = []
     for item in lista:
         if item not in res:
@@ -12,6 +13,21 @@ def eliminar_duplicados(lista):
     lista.clear()
     for item_res in res:
         lista.append(item_res)
+
+def list_to_dict(lista: list, clave: str = "A", verbose: bool =True):
+    '''
+    Para una lista determinada se devolverá un diccionario con
+    las letras marcadas como clave del tipo {"Q": item1, "R": item2 ...}
+    '''
+    dict_result = {}
+    for item in lista:
+        dict_result[clave] = item
+        if verbose:
+            print(str(item) + ' ahora es -> ' + repr(clave))
+        #aumentamos el valor de la clave
+        clave = chr(ord(clave) + 1)
+    return dict_result
+
 
 
 class Estado:
@@ -227,8 +243,8 @@ class Automata:
                 estado_resultado = estado_tope.transicion(input)
                 if estado_resultado not in estados_resultado:
                     pila_auxiliar.append(estado_resultado)
-        #imprimimos el resultado
-        print(estados_resultado)
+        #indexamos el array con los estados resultante en un array con nuevas claves
+        dict_nuevos_estados = list_to_dict(estados_resultado, 'A')
 
 
 
