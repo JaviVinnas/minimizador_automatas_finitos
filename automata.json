@@ -1,0 +1,107 @@
+{
+    "ALFABETO": [
+        "0",
+        "1"
+    ],
+    "ESTADOS": {
+        "Z": {
+            "INICIAL": true,
+            "FINAL": false,
+            "F_TRANSICION": {
+                "0": [],
+                "1": [],
+                "LAMBDA": [
+                    "A"
+                ]
+            }
+        },
+        "A": {
+            "INICIAL": false,
+            "FINAL": false,
+            "F_TRANSICION": {
+                "0": [
+                    "B",
+                    "E"
+                ],
+                "1": [
+                    "A"
+                ],
+                "LAMBDA": []
+            }
+        },
+        "B": {
+            "INICIAL": false,
+            "FINAL": true,
+            "F_TRANSICION": {
+                "0": [],
+                "1": [
+                    "B"
+                ],
+                "LAMBDA": [
+                    "C"
+                ]
+            }
+        },
+        "C": {
+            "INICIAL": false,
+            "FINAL": false,
+            "F_TRANSICION": {
+                "0": [
+                    "C"
+                ],
+                "1": [
+                    "D"
+                ],
+                "LAMBDA": []
+            }
+        },
+        "D": {
+            "INICIAL": false,
+            "FINAL": true,
+            "F_TRANSICION": {
+                "0": [],
+                "1": [],
+                "LAMBDA": [
+                    "B"
+                ]
+            }
+        },
+        "E": {
+            "INICIAL": false,
+            "FINAL": true,
+            "F_TRANSICION": {
+                "0": [],
+                "1": [
+                    "E"
+                ],
+                "LAMBDA": [
+                    "F"
+                ]
+            }
+        },
+        "F": {
+            "INICIAL": false,
+            "FINAL": false,
+            "F_TRANSICION": {
+                "0": [
+                    "F"
+                ],
+                "1": [
+                    "G"
+                ],
+                "LAMBDA": []
+            }
+        },
+        "G": {
+            "INICIAL": false,
+            "FINAL": true,
+            "F_TRANSICION": {
+                "0": [],
+                "1": [],
+                "LAMBDA": [
+                    "E"
+                ]
+            }
+        }
+    }
+}
