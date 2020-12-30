@@ -1,5 +1,6 @@
 import functools
 
+
 class ErrorAutomata(Exception):
     pass
 
@@ -14,7 +15,8 @@ def eliminar_duplicados(lista):
     for item_res in res:
         lista.append(item_res)
 
-def list_to_dict(lista: list, clave: str = "A", verbose: bool =True):
+
+def list_to_dict(lista: list, clave: str = "A", verbose: bool = True):
     '''
     Para una lista determinada se devolverá un diccionario con
     las letras marcadas como clave del tipo {"Q": item1, "R": item2 ...}
@@ -24,13 +26,12 @@ def list_to_dict(lista: list, clave: str = "A", verbose: bool =True):
         dict_result[clave] = item
         if verbose:
             print(str(item) + ' ahora es -> ' + repr(clave))
-        #aumentamos el valor de la clave
+        # aumentamos el valor de la clave
         clave = chr(ord(clave) + 1)
     return dict_result
 
 
-
-class Estado:
+class EstadoV1:
     def __init__(self, automata_padre, *id, **kwargs):
         '''
         Recibe como argumento el autómata padre al que pertenece,
@@ -55,14 +56,14 @@ class Estado:
     def __eq__(self, o: object):
         if not isinstance(o, self.__class__):
             return False
-        #ordenamos los ids previo a compararlos
+        # ordenamos los ids previo a compararlos
         id_obj_ord = o.id
         id_obj_ord.sort()
         id_self_ord = self.id
         id_self_ord.sort()
-        #comparamos ahora si
-        return functools.reduce(lambda x, y: x and y, map(lambda p, q: p == q,id_obj_ord,id_self_ord), True)
-        #return isinstance(o, self.__class__) and o.id == self.id
+        # comparamos ahora si
+        return functools.reduce(lambda x, y: x and y, map(lambda p, q: p == q, id_obj_ord, id_self_ord), True)
+        # return isinstance(o, self.__class__) and o.id == self.id
 
     def __str__(self):
         out = ''
@@ -82,52 +83,56 @@ class Estado:
         Compone dos estados en uno solo
         '''
         if not isinstance(other, self.__class__):
-            raise ErrorAutomata('No se puede sumar un estado con un ' + str(other.__class__))
-        #creamos el automata padre del resultado
+            raise ErrorAutomata(
+                'No se puede sumar un estado con un ' + str(other.__class__))
+        # creamos el automata padre del resultado
         if(other.automata_padre != self.automata_padre):
-            raise ErrorAutomata('No se pueden sumar estados de dos autómatas distintos (' + str(self) + ' y ' + str(other) + ')')
+            raise ErrorAutomata(
+                'No se pueden sumar estados de dos autómatas distintos (' + str(self) + ' y ' + str(other) + ')')
         padre = self.automata_padre
-        #creamos el id compuesto
+        # creamos el id compuesto
         id = [*other.id, *self.id]
         eliminar_duplicados(id)
-        #creamos si es final o inicial con un diccionario
+        # creamos si es final o inicial con un diccionario
         dict_definicion = {}
         dict_definicion["inicial".upper()] = self.inicial or other.inicial
         dict_definicion["final".upper()] = self.final or other.final
-        #creamos la funcion de transicion compuesta
+        # creamos la funcion de transicion compuesta
         dict_definicion['f_transicion'.upper()] = {}
-        #la lista de inputs posibles será el alfabeto + la cadena vacía
+        # la lista de inputs posibles será el alfabeto + la cadena vacía
         for letra_alfabeto in self.automata_padre.alfabeto:
-            dict_definicion['f_transicion'.upper()][str(letra_alfabeto)] = [*self.func_transicion[str(letra_alfabeto)], *other.func_transicion[str(letra_alfabeto)]]
-            eliminar_duplicados(dict_definicion['f_transicion'.upper()][str(letra_alfabeto)])
-        #para lambda añadimos aquellos estado que no estén en el id del estado
+            dict_definicion['f_transicion'.upper()][str(letra_alfabeto)] = [
+                *self.func_transicion[str(letra_alfabeto)], *other.func_transicion[str(letra_alfabeto)]]
+            eliminar_duplicados(
+                dict_definicion['f_transicion'.upper()][str(letra_alfabeto)])
+        # para lambda añadimos aquellos estado que no estén en el id del estado
         dict_definicion['f_transicion'.upper()]['lambda'.upper()] = []
         for estado_lambda in [*self.func_transicion['lambda'.upper()], *other.func_transicion['lambda'.upper()]]:
             if estado_lambda not in id and estado_lambda not in dict_definicion['f_transicion'.upper()]['lambda'.upper()]:
-                dict_definicion['f_transicion'.upper()]['lambda'.upper()].append(estado_lambda)
-        #creamos un nuevo estado con los nuevos datos
-        return Estado(padre, *id, **dict_definicion)
-
+                dict_definicion['f_transicion'.upper(
+                )]['lambda'.upper()].append(estado_lambda)
+        # creamos un nuevo estado con los nuevos datos
+        return EstadoV1(padre, *id, **dict_definicion)
 
     def transicion(self, input):
         '''
         Devuelve una lista con el estado al que se llega por ese input (compuesto si hubiera más de uno)
         '''
         if input not in self.automata_padre.alfabeto:
-            raise ErrorAutomata(str(input) + 'no es un input válido ' + str(self.automata_padre.alfabeto))
+            raise ErrorAutomata(
+                str(input) + 'no es un input válido ' + str(self.automata_padre.alfabeto))
         lista_estados = []
-        #obtenemos la lista de estados finales para ese input
+        # obtenemos la lista de estados finales para ese input
         for id_estado in self.func_transicion[str(input)]:
             estado = self.automata_padre.get_estado([id_estado])
             if estado not in lista_estados:
                 lista_estados.append(estado)
-            #añadimos la clausura de cada estado final al que lleguemos
+            # añadimos la clausura de cada estado final al que lleguemos
             for estado_clausura in estado.clausura():
                 if estado_clausura not in lista_estados:
                     lista_estados.append(estado_clausura)
-        #de la lista de estados que obtengamos la combinamos en un único estado
+        # de la lista de estados que obtengamos la combinamos en un único estado
         return functools.reduce(lambda x, y: x + y, lista_estados)
-
 
     def clausura(self):
         '''
@@ -146,20 +151,21 @@ class Estado:
             estado = self.automata_padre.get_estado(pilaAuxiliar.pop())
             # lo añado a los elemntos procesados
             resultado.append(estado)
-            #obtengo la descendencia
+            # obtengo la descendencia
             ids_clausura = estado.func_transicion['lambda'.upper()]
-            #por cada elemento de la descendencia
+            # por cada elemento de la descendencia
             for id_estado_clausura in ids_clausura:
-                #lo transformo de id a estado
-                estado_clausura = self.automata_padre.get_estado([id_estado_clausura])
-                #si no lo he procesado lo añado a la pila
+                # lo transformo de id a estado
+                estado_clausura = self.automata_padre.get_estado(
+                    [id_estado_clausura])
+                # si no lo he procesado lo añado a la pila
                 if estado_clausura not in resultado:
                     pilaAuxiliar.append(estado_clausura.id)
         eliminar_duplicados(resultado)
         return resultado
 
 
-class Automata:
+class AutomataV1:
     def __init__(self, **dict_definicion):
         '''
         Iniciamos el autómata vacío o con el diccionario de definicion en json
@@ -169,7 +175,7 @@ class Automata:
         self.estados = []
         # creamos cada uno de los estados
         for estado in dict_definicion.get('estados'.upper(), {}).items():
-            self.estados.append(Estado(self, estado[0], **(estado[1])))
+            self.estados.append(EstadoV1(self, estado[0], **(estado[1])))
         # eliminamos estados duplicados
         eliminar_duplicados(self.estados)
 
@@ -191,19 +197,20 @@ class Automata:
         Devuelve un estado o estado compuesto
         '''
         if len(id) == 1:
-            #solo queremos un estado
+            # solo queremos un estado
             for estado in self.estados:
                 if id == estado.id:
                     return estado
-            raise ErrorAutomata("No se ha encontrado ningún estado con id ->" + str(id))
+            raise ErrorAutomata(
+                "No se ha encontrado ningún estado con id ->" + str(id))
         else:
-            #queremos un estado compuesto
+            # queremos un estado compuesto
             lista_estados = []
             for estado_individual in id:
                 for estado_automata in self.estados:
                     if [estado_individual] == estado_automata.id:
                         lista_estados.append(estado_automata)
-            #una vez que hayamos pillado todos los estados los sumamos y los devolvemos
+            # una vez que hayamos pillado todos los estados los sumamos y los devolvemos
             return functools.reduce(lambda x, y: x + y, lista_estados)
 
     def es_determinista(self):
@@ -219,35 +226,33 @@ class Automata:
         '''
         if self.es_determinista():
             raise ErrorAutomata('El autómata ya es determinista')
-        #estructuras de datos auxiliares
+        # estructuras de datos auxiliares
         pila_auxiliar = []
         estados_resultado = []
-        #empezamos localizando el estado inicial
+        # empezamos localizando el estado inicial
         estado_inicial = None
         for estado in self.estados:
             if estado.inicial:
                 estado_inicial = estado
-        #obtenemos su clausura
-        estado_inicial = functools.reduce(lambda x, y: x+y, estado_inicial.clausura())
-        #lo metemos en la pilaAuxiliar
+        # obtenemos su clausura
+        estado_inicial = functools.reduce(
+            lambda x, y: x+y, estado_inicial.clausura())
+        # lo metemos en la pilaAuxiliar
         pila_auxiliar.append(estado_inicial)
-        #mientras que haya elemntos en la pila que procesar
+        # mientras que haya elemntos en la pila que procesar
         while len(pila_auxiliar) > 0:
-            #sacamos el tope de la pila
-            estado_tope = pila_auxiliar.pop();
-            #lo metemos en el resultado si no estuviera
+            # sacamos el tope de la pila
+            estado_tope = pila_auxiliar.pop()
+            # lo metemos en el resultado si no estuviera
             if estado_tope not in estados_resultado:
                 estados_resultado.append(estado_tope)
-            #vemos sus outputs para sus inputs del alfabeto (SIN LAMBDA)
+            # vemos sus outputs para sus inputs del alfabeto (SIN LAMBDA)
             for input in self.alfabeto:
                 estado_resultado = estado_tope.transicion(input)
                 if estado_resultado not in estados_resultado:
                     pila_auxiliar.append(estado_resultado)
-        #indexamos el array con los estados resultante en un array con nuevas claves
+        # indexamos el array con los estados resultante en un array con nuevas claves
         dict_nuevos_estados = list_to_dict(estados_resultado, 'A')
-
-
-
 
     def minimizar(self):
         pass

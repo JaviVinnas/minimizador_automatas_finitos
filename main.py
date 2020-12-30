@@ -1,10 +1,10 @@
 import json
-from automata import Automata
+from automata_v1 import AutomataV1
 
 def main():
     with open('automata.json') as json_file:
         dict_definicion = json.load(json_file)
-        automata = Automata(**dict_definicion)
+        automata = AutomataV1(**dict_definicion)
         print(automata)
         print(automata.es_determinista())
         automata.transformar_determinista()
