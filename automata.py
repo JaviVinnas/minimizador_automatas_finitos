@@ -190,7 +190,7 @@ class Estado:
 
 def indexar(estados: set, clave: str = "A"):
     '''
-    Para una lista determinada se devolverá un automata con
+    Para una set de estados se devolverá un automata con
     los nuevos estados que correspondan
 
     Los estados tendrán que ser deterministas
