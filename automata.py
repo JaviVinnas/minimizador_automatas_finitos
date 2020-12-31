@@ -1,4 +1,5 @@
 from functools import reduce
+import json
 
 
 class ErrorAutomata(Exception):
@@ -189,15 +190,37 @@ class Estado:
 
 def indexar(estados: set, clave: str = "A"):
     '''
-    Para una lista determinada se devolverá un diccionario con
-    las letras marcadas como clave del tipo {"Q": item1, "R": item2 ...}
+    Para una lista determinada se devolverá un automata con
+    los nuevos estados que correspondan
+
+    Los estados tendrán que ser deterministas
     '''
     dict_result = {}
+    inputs = None
     for item in sorted(list(estados)):
-        dict_result[clave] = item
+        dict_result[item] = clave
+        inputs = item.automata.alfabeto
         # aumentamos el valor de la clave
         clave = chr(ord(clave) + 1)
-    return dict_result
+    estados_finales = {}
+    #recorremos los pares estado antiguo -> nuevo id
+    for item in dict_result.items():
+        #evaluamos cada input del alfabeto (sin lambda)
+        #creamos una entrada para el nuevo estado en el diccionario y metemos sus parámetros inicial y final en él
+        estados_finales[item[1]] = {}
+        estados_finales[item[1]]['inicial'.upper()] = item[0].inicial
+        estados_finales[item[1]]['final'.upper()] = item[0].final
+        estados_finales[item[1]]['f_transicion'.upper()] = {}
+        #evaluamos para cada input del alfabeto el estado compuesto en el que desemboca
+        for input in inputs:
+            #evaluamos el estado que conseguimos
+            estado_result = item[0].transicion_compuesta(input)
+            #ponemos el id asociado al estado que obtengamos como el resultado de la función de transición
+            estados_finales[item[1]]['f_transicion'.upper()][input] = [dict_result[estado_result]]
+    #devolvemos un nuevo autómata
+    return Automata(inputs, estados_finales)
+
+
 
 
 class Automata:
@@ -284,5 +307,6 @@ class Automata:
                 estado_resultado = estado.transicion_compuesta(input)
                 if estado_resultado not in estados_resultado:
                     pila_auxiliar.append(estado_resultado)
-        # indexamos los estados resultantes
-        print(indexar(estados_resultado, 'A'))
+        # indexamos los estados resultantes para construir un nuevo automata
+        return indexar(estados_resultado, 'A')
+
