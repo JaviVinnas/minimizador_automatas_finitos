@@ -99,7 +99,7 @@ class Estado:
         # el automata padre debe ser el mismo
         if(o.automata != self.automata):
             raise ErrorAutomata(
-                'No se pueden sumar estados de dos autómatas distintos (' + str(self) + ' y ' + str(other) + ')')
+                'No se pueden sumar estados de dos autómatas distintos (' + str(self) + ' y ' + str(o) + ')')
         # creamos el id
         id_result = self.id.union(o.id)
         # creamos su automata padre
