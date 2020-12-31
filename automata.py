@@ -76,7 +76,7 @@ class Estado:
         '''
         if not isinstance(o, self.__class__):
             return False
-        #primero siempre irá el inicial
+        # primero siempre irá el inicial
         if self.inicial != o.inicial:
             return self.inicial
         # ordenaremos por tamaño del set id
@@ -90,6 +90,36 @@ class Estado:
                     self_menor_o[letra_id < letra_id_o] += 1
             return self_menor_o[True] > self_menor_o[False]
 
+    def __add__(self, o: object):
+        '''Compone dos estados como uno solo'''
+        if not isinstance(o, self.__class__):
+            raise ErrorAutomata(
+                'No se puede sumar un estado con un ' + str(o.__class__))
+        #el automata padre debe ser el mismo
+        if(o.automata != self.automata):
+            raise ErrorAutomata('No se pueden sumar estados de dos autómatas distintos (' + str(self) + ' y ' + str(other) + ')')
+        #creamos el id
+        id_result = self.id.union(o.id)
+        #creamos su automata padre
+        automata_result = self.automata
+        #creamos si es inicial y/o final
+        inicial_result = self.inicial or o.inicial
+        final_result = self.final or o.final
+        #creamos su función de transición iterativamente
+        f_transicion_result = {}
+        for letra_alfabeto in self.automata.alfabeto:
+            f_transicion_result[str(letra_alfabeto)] = self.f_transicion[str(letra_alfabeto)].union(o.f_transicion[str(letra_alfabeto)])
+        #para lambda añadimos aquellos estados que no estén en la nueva id del estado compuesto
+        f_transicion_result['lambda'.upper()] = set()
+        for estado_lambda in self.f_transicion['lambda'.upper()].union(o.f_transicion['lambda'.upper()]):
+            if estado_lambda not in id_result:
+                f_transicion_result['lambda'.upper()].add(estado_lambda)
+        #devolvemos el nuevo estado
+        return Estado(id_result, automata_result, inicial_result, final_result, f_transicion_result)
+
+
+
+
     def __hash__(self):
         '''identificador unico del estado'''
         return hash(str(sorted(list(self.id))))
@@ -98,7 +128,50 @@ class Estado:
         '''
         Devuelve un set con él mismo y los estados recursivos por la cadena vacía
         '''
-        pass
+        pila_auxiliar = [self.id]
+        # meto la primera generación de estados por la cadena vacia en pilaAuxiliar
+        for estado_lambda in self.f_transicion['lambda'.upper()]:
+            if estado_lambda not in pila_auxiliar:
+                pila_auxiliar.append([estado_lambda])
+        # donde guardaremos los estados que obtengamos
+        resultado = set()
+        # mientra haya cosas en la pila
+        while len(pila_auxiliar) > 0:
+            # quito el tope de la pila
+            estado = self.automata.get_estado(pila_auxiliar.pop())
+            # lo añado a los elemntos procesados
+            resultado.add(estado)
+            # lo añado a la funcion de transición
+            ids_clausura = estado.f_transicion['lambda'.upper()]
+            # por cada estado de la descendencia
+            for id_estado_clausura in ids_clausura:
+                # paso de id a estado
+                estado_clausura = self.automata.get_estado(
+                    set(id_estado_clausura))
+                # si no lo procesé lo añado a la pila
+                if estado_clausura not in resultado:
+                    pila_auxiliar.append(estado_clausura.id)
+        # devolvemos el set resultado
+        return resultado
+
+    def transicion(self, input: set):
+        '''
+        Devuelve una set con los estados a los que se llega para un input determinado
+        El input será un set con las letras que vayamos a introducir
+        '''
+        if input not in self.automata.alfabeto:
+            raise ErrorAutomata(
+                str(input) + 'no es un input válido ' + str(self.automata.alfabeto))
+        #variable que guradará los estados resultantes
+        estados_resultantes = set()
+        #recorremos la función de transición para cada input (si hubiera más de uno)
+        for id_estado in self.f_transicion[str(input)]:
+            estado = self.automata.get_estado(set(id_estado))
+            #añadimos el estado y su clausura
+            estados_resultantes.add(estado.clausura())
+        #devolvemos una lista con todos los resultados
+        return estados_resultantes
+
 
 
 class Automata:
