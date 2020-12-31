@@ -14,7 +14,7 @@ def main():
         automata.transformar_determinista()
         '''
         automata = Automata(set(dict_definicion['alfabeto'.upper()]), dict_definicion['estados'.upper()])
-        print(automata)
+        automata.transformar_determinista()
 
 
 if __name__ == '__main__':
