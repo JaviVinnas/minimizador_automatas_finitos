@@ -1,5 +1,6 @@
 from functools import reduce
 
+
 class ErrorAutomata(Exception):
     pass
 
@@ -152,7 +153,7 @@ class Estado:
                     pila_auxiliar.append(estado_clausura.id)
         # devolvemos el set resultado
         return resultado
-    
+
     def clausura_compuesta(self):
         '''
         igual que la clausura pero devuelve un estado compuesto
@@ -185,6 +186,7 @@ class Estado:
         '''
         return reduce(lambda x, y: x+y, self.transicion(input))
 
+
 def indexar(estados: set, clave: str = "A"):
     '''
     Para una lista determinada se devolverá un diccionario con
@@ -196,6 +198,7 @@ def indexar(estados: set, clave: str = "A"):
         # aumentamos el valor de la clave
         clave = chr(ord(clave) + 1)
     return dict_result
+
 
 class Automata:
     '''Clase que representará a un autómata determinista'''
@@ -256,7 +259,7 @@ class Automata:
                     if len(inputs[1]) > 1:
                         return False
         return True
-    
+
     def transformar_determinista(self):
         '''
         Devuelve un autómata determinista equivalente al actual
@@ -265,7 +268,7 @@ class Automata:
             raise ErrorAutomata('El autómata ya es determinista')
         pila_auxiliar = []
         estados_resultado = set()
-        #metemos la clausura del estado inicial en la pila
+        # metemos la clausura del estado inicial en la pila
         for estado in self.estados:
             if estado.inicial:
                 pila_auxiliar.append(estado.clausura_compuesta())
@@ -273,17 +276,13 @@ class Automata:
         if len(pila_auxiliar) == 0:
             raise ErrorAutomata('El autómata debe tener un estado inicial')
         while len(pila_auxiliar) > 0:
-            #sacamos el tope de la pila y lo metemos en el resultado
+            # sacamos el tope de la pila y lo metemos en el resultado
             estado = pila_auxiliar.pop()
             estados_resultado.add(estado)
-            #vemos sus estados para inputs del alfabeto (sin lambda)
+            # vemos sus estados para inputs del alfabeto (sin lambda)
             for input in self.alfabeto:
                 estado_resultado = estado.transicion_compuesta(input)
                 if estado_resultado not in estados_resultado:
                     pila_auxiliar.append(estado_resultado)
-        #indexamos los estados resultantes
+        # indexamos los estados resultantes
         print(indexar(estados_resultado, 'A'))
-        
-
-
-
