@@ -50,7 +50,7 @@ class Estado:
 
     def __str__(self):
         out = ''
-        out += 'Estado ' + str(list(self.id)) + '\n'
+        out += 'Estado ' + str(sorted(list(self.id))) + '\n'
         if self.inicial:
             out += '\t> estado inicial\n'
         if self.final:
@@ -59,7 +59,7 @@ class Estado:
         return out
 
     def __repr__(self):
-        return '<Estado' + str(list(self.id)) + '>'
+        return '<Estado' + str(sorted(list(self.id))) + '>'
 
     def __eq__(self, o: object):
         '''Nos dice si dos estados son iguales'''
@@ -69,12 +69,16 @@ class Estado:
         return o.id == self.id
 
     def __lt__(self, o: object):
-        '''Nos dice si el objeto self es menor que el objeto o'''
+        '''
+        Nos dice si el objeto self es menor que el objeto o
+
+        En una lista se ordenan menor -> mayor
+        '''
         if not isinstance(o, self.__class__):
             return False
         #primero siempre irá el inicial
         if self.inicial != o.inicial:
-            return o.inicial
+            return self.inicial
         # ordenaremos por tamaño del set id
         if len(self.id) != len(o.id):
             return len(self.id) < len(o.id)
@@ -88,7 +92,7 @@ class Estado:
 
     def __hash__(self):
         '''identificador unico del estado'''
-        return hash(str(self.id))
+        return hash(str(sorted(list(self.id))))
 
     def clausura(self):
         '''
@@ -120,7 +124,7 @@ class Automata:
         out += 'alfabeto: ' + str(list(self.alfabeto)) + '\n'
         out += 'estados activos: ' + str(list(self.estados_activos)) + '\n'
         out += 'estados: ' + '\n'
-        for estado in self.estados:
+        for estado in sorted(list(self.estados)):
             out += str(estado) + '\n'
         return out
 
