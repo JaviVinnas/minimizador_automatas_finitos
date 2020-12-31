@@ -72,6 +72,9 @@ class Estado:
         '''Nos dice si el objeto self es menor que el objeto o'''
         if not isinstance(o, self.__class__):
             return False
+        #primero siempre irá el inicial
+        if self.inicial != o.inicial:
+            return o.inicial
         # ordenaremos por tamaño del set id
         if len(self.id) != len(o.id):
             return len(self.id) < len(o.id)
