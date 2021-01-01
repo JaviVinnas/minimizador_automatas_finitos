@@ -356,7 +356,7 @@ class Automata:
         # indexamos los estados resultantes para construir un nuevo automata
         return automata_from_dict_estados(indexar(estados_resultado, 'A'), determinizar = True)
 
-    def minimizar(self):
+    def minimizar(self) -> Automata:
         '''
         Devuelve el autómata determinista mínimo equivalente al actual
 
