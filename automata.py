@@ -330,9 +330,12 @@ class Automata:
     def minimizar(self):
         '''
         Devuelve el autómata determinista mínimo equivalente al actual
+
+        El autómata debe ser determinista
         '''
         #nos aseguramos de que sea determinista
-        automata = self if self.es_determinista() else self.transformar_determinista()
+        if not self.es_determinista():
+            raise ErrorAutomata("el autómata debe ser determinista para poder minimizarse")
         #construimos los dos conjuntos, generación anterior y la actual
         last_gen = set()
         actual_gen = set()
@@ -340,8 +343,10 @@ class Automata:
         #serán frozensets para evitar líos de hashabilidad al ser estos no mutables
         estados_finales = frozenset([estado for estado in self.estados if estado.final])
         actual_gen.add(estados_finales)
-        actual_gen.add(frozenset(automata.estados - estados_finales))
+        actual_gen.add(frozenset(self.estados - estados_finales))
         #mientras haya cambios entre generaciones
         while last_gen != actual_gen:
-            pass
+            #copiamos el contenido del set de la generación actual en la generación anterior
+            last_gen = actual_gen.copy()
+            
 
