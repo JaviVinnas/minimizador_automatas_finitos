@@ -7,15 +7,8 @@ def main():
     with open('automata.json') as json_file:
 
         dict_definicion = json.load(json_file)
-        '''
-        automata = AutomataV1(**dict_definicion)
-        print(automata)
-        print(automata.es_determinista())
-        automata.transformar_determinista()
-        '''
         automata = Automata(set(dict_definicion['alfabeto'.upper()]), dict_definicion['estados'.upper()])
         print(automata.transformar_determinista())
-        print(automata.transformar_determinista().es_determinista())
 
 
 if __name__ == '__main__':
