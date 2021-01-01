@@ -8,9 +8,6 @@ class ErrorAutomata(Exception):
     '''
     pass
 
-class NoHayEstado(ErrorAutomata):
-    pass
-
 
 class Estado:
     # declaramos variables para el autocompletado
@@ -166,8 +163,8 @@ class Estado:
         igual que la clausura pero devuelve un estado compuesto
         en lugar de un set con los diversos estados
         '''
-        #no es necesario lanzar una excepción ya que como poco la clausura
-        #tendrá el mismo estado como mucho
+        # no es necesario lanzar una excepción ya que como poco la clausura
+        # tendrá el mismo estado como mucho
         return reduce(lambda x, y: x + y, self.clausura())
 
     def transicion(self, input: str):
@@ -195,8 +192,8 @@ class Estado:
 
         Devuelve None si no hubiera ningún estado como resultado del input
         '''
-        #si la transición no diera nada lanzamos una excepción para evitar errores
-        #en el reduce
+        # si la transición no diera nada lanzamos una excepción para evitar errores
+        # en el reduce
         if len(self.transicion(input)) == 0:
             return None
         return reduce(lambda x, y: x+y, self.transicion(input))
@@ -217,30 +214,29 @@ def indexar(estados: set, clave: str = "A"):
         # aumentamos el valor de la clave
         clave = chr(ord(clave) + 1)
     estados_finales = {}
-    #imprimimos el diccionario indexado
-    print(dict_result)
-    #recorremos los pares estado antiguo -> nuevo id
+    # imprimimos el diccionario indexado
+    print(dict_result.items())
+    # recorremos los pares estado antiguo -> nuevo id
     for item in dict_result.items():
-        #evaluamos cada input del alfabeto (sin lambda)
-        #creamos una entrada para el nuevo estado en el diccionario y metemos sus parámetros inicial y final en él
+        # evaluamos cada input del alfabeto (sin lambda)
+        # creamos una entrada para el nuevo estado en el diccionario y metemos sus parámetros inicial y final en él
         estados_finales[item[1]] = {}
         estados_finales[item[1]]['inicial'.upper()] = item[0].inicial
         estados_finales[item[1]]['final'.upper()] = item[0].final
         estados_finales[item[1]]['f_transicion'.upper()] = {}
-        #evaluamos para cada input del alfabeto el estado compuesto en el que desemboca
+        # evaluamos para cada input del alfabeto el estado compuesto en el que desemboca
         for input in inputs:
-            #evaluamos el estado que conseguimos
+            # evaluamos el estado que conseguimos
             estado_result = item[0].transicion_compuesta(input)
-            #ponemos el id asociado al estado que obtengamos como el resultado de la función de transición
+            # ponemos el id asociado al estado que obtengamos como el resultado de la función de transición
             if dict_result.get(estado_result, None) == None:
                 ids_result = []
             else:
                 ids_result = [dict_result[estado_result]]
-            estados_finales[item[1]]['f_transicion'.upper()][input] = ids_result
-    #devolvemos un nuevo autómata
+            estados_finales[item[1]]['f_transicion'.upper()
+                                     ][input] = ids_result
+    # devolvemos un nuevo autómata
     return Automata(inputs, estados_finales)
-
-
 
 
 class Automata:
@@ -308,7 +304,7 @@ class Automata:
         Devuelve un autómata determinista equivalente al actual
         '''
         if self.es_determinista():
-            raise ErrorAutomata('El autómata ya es determinista')
+            return self
         pila_auxiliar = []
         estados_resultado = set()
         # metemos la clausura del estado inicial en la pila
@@ -318,7 +314,7 @@ class Automata:
                 break
         if len(pila_auxiliar) == 0:
             raise ErrorAutomata('El autómata debe tener un estado inicial')
-        #mientras que la pila no esté vacía
+        # mientras que la pila no esté vacía
         while len(pila_auxiliar) > 0:
             # sacamos el tope de la pila y lo metemos en el resultado
             estado = pila_auxiliar.pop()
@@ -330,4 +326,22 @@ class Automata:
                     pila_auxiliar.append(estado_resultado)
         # indexamos los estados resultantes para construir un nuevo automata
         return indexar(estados_resultado, 'A')
+
+    def minimizar(self):
+        '''
+        Devuelve el autómata determinista mínimo equivalente al actual
+        '''
+        #nos aseguramos de que sea determinista
+        automata = self if self.es_determinista() else self.transformar_determinista()
+        #construimos los dos conjuntos, generación anterior y la actual
+        last_gen = set()
+        actual_gen = set()
+        #la generación actual tendrá dos conjuntos: los estados finales y los no finales
+        #serán frozensets para evitar líos de hashabilidad al ser estos no mutables
+        estados_finales = frozenset([estado for estado in self.estados if estado.final])
+        actual_gen.add(estados_finales)
+        actual_gen.add(frozenset(automata.estados - estados_finales))
+        #mientras haya cambios entre generaciones
+        while last_gen != actual_gen:
+            pass
 
