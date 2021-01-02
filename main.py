@@ -69,8 +69,10 @@ def main():
                                 print(automata_determinista)
                             else:
                                 automata_determinista = automata
-                            print("Minimizamos el autómata obtenido:")
-                            #TODO: hacer esta opción y arreglar el tostring de los estados
+                            print("Minimizamos el autómata:")
+                            automata_minimizado = automata_determinista.minimizar()
+                            print("Autómata determinista mínimo equivalente:")
+                            print(automata_minimizado)
                         if opcion == 'S':
                             # queremos salir
                             automata = None

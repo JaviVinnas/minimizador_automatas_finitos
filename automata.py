@@ -60,8 +60,10 @@ class Estado:
             out += '\t> estado inicial\n'
         if self.final:
             out += '\t> estado final\n'
-        out += '\t> funcion de transicion' + str(self.f_transicion)
-        return out
+        out += '\t> funcion de transicion: '
+        for key, value in sorted(self.f_transicion.items(), key=lambda x: x[0]):
+            out += "[{} -> {}] ".format(key, value if len(value) > 0 else '{}')
+        return out +'\n'
 
     def __repr__(self):
         return '<Estado' + str(sorted(list(self.id))) + '>'
