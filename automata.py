@@ -260,12 +260,16 @@ def automata_from_dict_estados(estados_indexados: dict, **kwargs: dict):
                 #<A,B> (o su nuevo id asociado mejor dicho) sería el estado que querríamos obtener
                 #1º -> recorremos los estados indexados
                 encontrado = False
-                for item_2 in estados_indexados.items():
-                    if estado_result.id.issubset(item_2[0].id) or estado_result.id == item_2[0].id:
-                        encontrado = True
-                        ids_result = [estados_indexados[item_2[0]]]
-                        break
-                if not encontrado:
+                #comprobamos que realmente haya surgindo un estado de esa transición
+                if estado_result != None:
+                    for item_2 in estados_indexados.items():
+                        if estado_result.id.issubset(item_2[0].id) or estado_result.id == item_2[0].id:
+                            encontrado = True
+                            ids_result = [estados_indexados[item_2[0]]]
+                            break
+                    if not encontrado:
+                        ids_result = []
+                else:
                     ids_result = []
             estados_finales[item_1[1]]['f_transicion'.upper()][input] = ids_result
     # devolvemos un nuevo autómata
@@ -363,6 +367,13 @@ class Automata:
                     if len(inputs[1]) > 1:
                         return False
         return True
+    
+    def clausura_compuesta_inicial(self):
+        '''Devuelve la clausura de partida que tendrá el autómata como estado compuesto'''
+        for estado in self.estados:
+            if estado.inicial:
+                return estado.clausura_compuesta()
+        return None
 
     def transformar_determinista(self):
         '''
@@ -370,19 +381,16 @@ class Automata:
         '''
         if self.es_determinista():
             return self
-        pila_auxiliar = []
-        estados_resultado = set()
         # metemos la clausura del estado inicial en la pila
-        for estado in self.estados:
-            if estado.inicial:
-                pila_auxiliar.append(estado.clausura_compuesta())
-                break
+        pila_auxiliar = [self.clausura_compuesta_inicial()]
+        estados_resultado = set()
         if len(pila_auxiliar) == 0:
             raise ErrorAutomata('El autómata debe tener un estado inicial')
         # mientras que la pila no esté vacía
         while len(pila_auxiliar) > 0:
             # sacamos el tope de la pila y lo metemos en el resultado
             estado = pila_auxiliar.pop()
+            estado.inicial = (estado == self.clausura_compuesta_inicial())
             estados_resultado.add(estado)
             # vemos sus estados para inputs del alfabeto (sin lambda)
             for input in self.alfabeto:

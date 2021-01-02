@@ -5,14 +5,15 @@ import json
 
 
 def main():
-    with open('automata.json') as json_file:
+    with open('automatas.json') as json_file:
         # inicializamos variables de utilidad
         automatas = json.load(json_file)
         id_automata = {}
         letra = 'a'
         salir = False
         automata = None
-        opcion = None
+        opcion_menu_principal = None
+        opcion_menu_automata = None
         marca_negrita = '\033[1m'
         marca_fin_negrita = '\033[0m'
         # fin de la inicialización
@@ -26,17 +27,17 @@ def main():
                     id_automata[letra] = automata_def[1]
                     print(letra + ') ' + automata_def[0])
                     letra = chr(ord(letra) + 1)
-                opcion = input("Escoge tu autómata o 'S' para salir: ")
-                if id_automata.get(opcion, None) != None:
+                opcion_menu_principal = input("Escoge tu autómata o 'S' para salir: ")
+                if id_automata.get(opcion_menu_principal, None) != None:
                     automata = Automata(set(
-                        id_automata[opcion]['alfabeto'.upper()]), id_automata[opcion]['estados'.upper()])
-                    print('Autómata ' + opcion + ' cargado correctamente')
-                elif opcion == 'S':
+                        id_automata[opcion_menu_principal]['alfabeto'.upper()]), id_automata[opcion_menu_principal]['estados'.upper()])
+                    print('Autómata ' + opcion_menu_principal + ' cargado correctamente')
+                elif opcion_menu_principal == 'S':
                     salir = True
                 else:
-                    print('> ERROR, no hay ningún autómata de nº ' + opcion)
+                    print('> ERROR, no hay ningún autómata de nº ' + opcion_menu_principal)
             else:
-                print('__MENÚ_DEL_AUTÓMATA_[' + opcion.upper() + ']__')
+                print('__MENÚ_DEL_AUTÓMATA_[' + opcion_menu_principal.upper() + ']__')
                 # automata sin errores
                 if len(automata.es_valido()) == 0:
                     # dividimos si fuera o no determinista
@@ -48,19 +49,19 @@ def main():
                         print('b) Transformar a determinista')
                     print('c) Minimizar')
                     print('S) Salir')
-                    opcion = input('Escoge una opción: ')
-                    if opcion in ['a', 'c', 'S'] if automata.es_determinista() else ['a', 'b', 'c', 'S']:
+                    opcion_menu_automata = input('Escoge una opción: ')
+                    if opcion_menu_automata in ['a', 'c', 'S'] if automata.es_determinista() else ['a', 'b', 'c', 'S']:
                         print('>>>>>>>>>>>>')
-                        if opcion == 'a':
+                        if opcion_menu_automata == 'a':
                             # imprimir por pantalla el autómata
                             print(automata)
-                        if opcion == 'b':
+                        if opcion_menu_automata == 'b':
                             # queremos determinizar el autómata
                             print("Transformaremos el AFN en un AFD")
                             automata_determinista = automata.transformar_determinista()
                             print("Autómata determinista equivalente:")
                             print(automata_determinista)
-                        if opcion == 'c':
+                        if opcion_menu_automata == 'c':
                             # queremos minimizar el automata
                             #si no fuera determinista lo determinizaríamos primero
                             automata_determinista = None
@@ -75,17 +76,17 @@ def main():
                             automata_minimizado = automata_determinista.minimizar()
                             print("Autómata determinista mínimo equivalente:")
                             print(automata_minimizado)
-                        if opcion == 'S':
+                        if opcion_menu_automata == 'S':
                             # queremos salir
                             automata = None
                     else:
-                        print(opcion + ' no es una opción válida')
+                        print(opcion_menu_automata + ' no es una opción válida')
                 else:
                     # tiene errores
                     print('El autómata tiene los siguientes errores:')
                     for error in automata.es_valido():
                         print('\t> ' + error)
-                    print('Corrígelos en el archivo de definición ' + marca_negrita + 'automata.json' + marca_fin_negrita)
+                    print('Corrígelos en el archivo de definición ' + marca_negrita + 'automatas.json' + marca_fin_negrita)
                     automata = None
             print('--------------------------------------------------------------------')
 

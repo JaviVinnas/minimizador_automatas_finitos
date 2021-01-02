@@ -1,0 +1,279 @@
+{
+    "plantilla": {
+        "ALFABETO": [
+            "0",
+            "1"
+        ],
+        "ESTADOS": {
+            "Z": {
+                "INICIAL": true,
+                "FINAL": false,
+                "F_TRANSICION": {
+                    "0": [],
+                    "1": [],
+                    "LAMBDA": [
+                        "A"
+                    ]
+                }
+            },
+            "A": {
+                "INICIAL": false,
+                "FINAL": false,
+                "F_TRANSICION": {
+                    "0": [
+                        "B",
+                        "E"
+                    ],
+                    "1": [
+                        "A"
+                    ],
+                    "LAMBDA": []
+                }
+            },
+            "B": {
+                "INICIAL": false,
+                "FINAL": true,
+                "F_TRANSICION": {
+                    "0": [],
+                    "1": [
+                        "B"
+                    ],
+                    "LAMBDA": [
+                        "C"
+                    ]
+                }
+            },
+            "C": {
+                "INICIAL": false,
+                "FINAL": false,
+                "F_TRANSICION": {
+                    "0": [
+                        "C"
+                    ],
+                    "1": [
+                        "D"
+                    ],
+                    "LAMBDA": []
+                }
+            },
+            "D": {
+                "INICIAL": false,
+                "FINAL": true,
+                "F_TRANSICION": {
+                    "0": [],
+                    "1": [],
+                    "LAMBDA": [
+                        "B"
+                    ]
+                }
+            },
+            "E": {
+                "INICIAL": false,
+                "FINAL": true,
+                "F_TRANSICION": {
+                    "0": [],
+                    "1": [
+                        "E"
+                    ],
+                    "LAMBDA": [
+                        "F"
+                    ]
+                }
+            },
+            "F": {
+                "INICIAL": false,
+                "FINAL": false,
+                "F_TRANSICION": {
+                    "0": [
+                        "F"
+                    ],
+                    "1": [
+                        "G"
+                    ],
+                    "LAMBDA": []
+                }
+            },
+            "G": {
+                "INICIAL": false,
+                "FINAL": true,
+                "F_TRANSICION": {
+                    "0": [],
+                    "1": [],
+                    "LAMBDA": [
+                        "E"
+                    ]
+                }
+            }
+        }
+    },
+    "ej1": {
+        "ALFABETO": [
+            "0",
+            "1"
+        ],
+        "ESTADOS": {
+            "A": {
+                "INICIAL": true,
+                "FINAL": false,
+                "F_TRANSICION": {
+                    "0": [
+                        "B"
+                    ],
+                    "1": [
+                        "E"
+                    ],
+                    "LAMBDA": [
+                        "C"
+                    ]
+                }
+            },
+            "B": {
+                "INICIAL": false,
+                "FINAL": false,
+                "F_TRANSICION": {
+                    "0": [
+                        "C"
+                    ],
+                    "1": [],
+                    "LAMBDA": []
+                }
+            },
+            "C": {
+                "INICIAL": false,
+                "FINAL": false,
+                "F_TRANSICION": {
+                    "0": [],
+                    "1": [],
+                    "LAMBDA": [
+                        "A",
+                        "D",
+                        "F"
+                    ]
+                }
+            },
+            "D": {
+                "INICIAL": false,
+                "FINAL": false,
+                "F_TRANSICION": {
+                    "0": [],
+                    "1": [
+                        "E"
+                    ],
+                    "LAMBDA": [
+                        "F"
+                    ]
+                }
+            },
+            "E": {
+                "INICIAL": false,
+                "FINAL": false,
+                "F_TRANSICION": {
+                    "0": [],
+                    "1": [
+                        "F"
+                    ],
+                    "LAMBDA": []
+                }
+            },
+            "F": {
+                "INICIAL": false,
+                "FINAL": true,
+                "F_TRANSICION": {
+                    "0": [],
+                    "1": [],
+                    "LAMBDA": [
+                        "D"
+                    ]
+                }
+            }
+        }
+    },
+    "ej3": {
+        "ALFABETO": [
+            "0",
+            "1"
+        ],
+        "ESTADOS": {
+            "A": {
+                "INICIAL": true,
+                "FINAL": false,
+                "F_TRANSICION": {
+                    "0": [
+                        "B"
+                    ],
+                    "1": [],
+                    "LAMBDA": [
+                        "B"
+                    ]
+                }
+            },
+            "B": {
+                "INICIAL": false,
+                "FINAL": false,
+                "F_TRANSICION": {
+                    "0": [
+                        "A"
+                    ],
+                    "1": [
+                        "C"
+                    ],
+                    "LAMBDA": [
+                        "A"
+                    ]
+                }
+            },
+            "C": {
+                "INICIAL": false,
+                "FINAL": true,
+                "F_TRANSICION": {
+                    "0": [],
+                    "1": [
+                        "D"
+                    ],
+                    "LAMBDA": [
+                        "A"
+                    ]
+                }
+            },
+            "D": {
+                "INICIAL": false,
+                "FINAL": false,
+                "F_TRANSICION": {
+                    "0": [
+                        "F"
+                    ],
+                    "1": [
+                        "F"
+                    ],
+                    "LAMBDA": [
+                        "E"
+                    ]
+                }
+            },
+            "E": {
+                "INICIAL": false,
+                "FINAL": true,
+                "F_TRANSICION": {
+                    "0": [],
+                    "1": [
+                        "E"
+                    ],
+                    "LAMBDA": [
+                        "F"
+                    ]
+                }
+            },
+            "F": {
+                "INICIAL": false,
+                "FINAL": false,
+                "F_TRANSICION": {
+                    "0": [
+                        "E"
+                    ],
+                    "1": [],
+                    "LAMBDA": []
+                }
+            }
+        }
+    }
+}
