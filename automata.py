@@ -198,17 +198,19 @@ class Estado:
             return None
         return reduce(lambda x, y: x+y, self.transicion(input))
 
-def indexar(estados: set, clave: str = "A"):
+def indexar(estados: set, clave: str = "A", verbose:bool = True):
     '''
     Devuelve un diccionario con los items del set indexados de forma item1 -> 'A', item2 -> 'B'...
     '''
-    dict_result = {}
+    estados_indexados = {}
     for item in sorted(list(estados)):
-        dict_result[item] = clave
+        estados_indexados[item] = clave
         # aumentamos el valor de la clave
         clave = chr(ord(clave) + 1)
     # imprimimos el diccionario indexado
-    return dict_result
+    if verbose:
+        print('Nuevos estados -> ' + str(estados_indexados))
+    return estados_indexados
 
 def automata_from_dict_estados(estados_indexados: dict, **kwargs: dict):
     '''
@@ -343,7 +345,7 @@ class Automata:
                     if output not in self.estados_definicion.keys():
                         errores.append('El output <' + output + '> no se corresponde con ningún estado')
         if num_estados_iniciales != 1:
-            errores.append('El autómata solo debe tener un estado inicial (tiene ' + num_estados_iniciales + ')')
+            errores.append('El autómata solo debe tener un estado inicial (tiene ' + str(num_estados_iniciales) + ')')
         if num_estados_finales == 0:
             errores.append('El autómata debe tener mínimo un estado final')
         return errores
