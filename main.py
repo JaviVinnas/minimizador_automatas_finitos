@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from automata import Automata
 import json
 
