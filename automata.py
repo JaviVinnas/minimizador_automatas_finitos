@@ -276,6 +276,7 @@ class Automata:
         self.alfabeto = alfabeto
         self.estados_activos = set()
         self.estados = set()
+        self.estados_definicion = estados
         # construimos el set de estados
         for estado_def in estados.items():
             id_estado = set(estado_def[0])
@@ -284,7 +285,6 @@ class Automata:
             f_transicion = estado_def[1].get('f_transicion'.upper(), {})
             self.estados.add(
                 Estado(id_estado, self, inicial, final, f_transicion))
-        # TODO: añadimos al set de estados activos los estados activos correspondientes
 
     def __str__(self):
         out = ''
@@ -315,6 +315,38 @@ class Automata:
                     if set(estado_id) == estado.id:
                         lista_estados.add(estado)
             return reduce(lambda x, y: x + y, lista_estados)
+
+    def es_valido(self):
+        '''
+        Nos dice si es válido o no. Devuelve una lista con los errores encontrados
+        '''
+        errores = []
+
+        if len(self.alfabeto) == 0:
+            errores.append('El alfabeto debe ser tener al menos un input')
+        elif set([item for item in self.alfabeto if len(item) == 1 and isinstance(item,str)]) != self.alfabeto:
+            errores.append('Los elementos del alfabeto deben ser letras')
+        num_estados_iniciales = 0
+        num_estados_finales = 0
+        for estado in self.estados:
+            if estado.inicial:
+                num_estados_iniciales +=1
+            if estado.final:
+                num_estados_finales +=1
+            #vemos si las transiciones se corresponden con un estado
+            for f_trans_individual in estado.f_transicion.items():
+                if f_trans_individual[0] != 'lambda'.upper():
+                    input = set(f_trans_individual[0])
+                    if not input.issubset(self.alfabeto) and input != self:
+                        errores.append('El input' + str(input) + ' del estado ' + repr(estado) + ' no está en el alfabeto del autómata ' + str(self.alfabeto))
+                for output in f_trans_individual[1]:
+                    if output not in self.estados_definicion.keys():
+                        errores.append('El output <' + output + '> no se corresponde con ningún estado')
+        if num_estados_iniciales != 1:
+            errores.append('El autómata solo debe tener un estado inicial (tiene ' + num_estados_iniciales + ')')
+        if num_estados_finales == 0:
+            errores.append('El autómata debe tener mínimo un estado final')
+        return errores
 
     def es_determinista(self):
         '''Nos dice si el automata es determinista'''
@@ -413,6 +445,7 @@ class Automata:
                                 if transicion_estado[0] in nuevo_grupo_estados:
                                     nuevo_grupo_estados.add(estado)
                                     break
+                            break
                     if not encontrado:
                         #si no fuera el caso creamos un nuevo set en nuevos_grupos_estados con solamente él
                         nuevos_grupos_estados.append(set([estado]))
