@@ -1,13 +1,6 @@
 from automata import Automata
 import json
 
-def init_variables():
-    '''Se inicializan variables de utilidad para el menú'''
-    automatas = json.load(json_file)
-    id_automata = {}
-    letra = 'a'
-    salir = False
-    automata = None
 
 def main():
     with open('automata.json') as json_file:
